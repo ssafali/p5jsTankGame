@@ -1,6 +1,6 @@
 
 class Tank {
-    constructor(image) {
+    constructor(image, isWhite) {
         this.height = 540;
         this.width = 540;
 
@@ -9,20 +9,33 @@ class Tank {
         this.y = random(540);
 
         this.angle = 0;
-        this.speed = 0.2;
-        
+        this.speed = 0.7;
+
+        this.rotateAmount = 0;
+
+        this.shells = [];
+        this.isWhite = isWhite;
     }
 
-
-    rotate() {
+    update(enemyShells) {
+        this.goForward();
+        this.stayWithin();
 
         this.angle += this.rotateAmount;
-        console.log("Space pressed.")
 
+        //checking if player has been hit
+        this.gettingShot(enemyShells)
+    }
+
+    gettingShot(enemyShells) {
+        for (let i = enemyShells.length - 1; i >= 0; i--) {
+            if (dist(this.x, this.y, enemyShells[i].x, enemyShells[i].y) < (10 + enemyShells[i].r)){ 
+                enemyShells.splice(i, 1);
+          }
+        }
     }
 
     goForward() {
-
         this.x += this.speed * sin(this.angle);
         this.y += this.speed * cos(this.angle);
 
@@ -33,36 +46,47 @@ class Tank {
     stayWithin() {
         if (this.x < -this.image.width) {
             this.x = this.width;
-            this.x+=this.speed;
         } else if (this.x > this.width) {
-            this.x =0;
+            this.x = 0;
         }
-
-
         if (this.y > this.height) {
             this.y = 0;
         } else if (this.y < -this.image.height) {
             this.y = this.height;
-            
         }
     }
-
 
     draw() {
         
         push();
         translate(this.x, this.y);
         imageMode(CENTER);
-        rotate(this.angle);
-        rect(0, 0,28,28)
+        rotate(this.angle + PI);
+        image(this.image, 0, 0,40,45)
         pop();
-        
+
+        this.drawShells();
     }
 
-    update() {
-        this.goForward();
-        this.stayWithin();
-        this.rotate();
+    shoot() {
+        let shell = new Shell(this.x, this.y, this.angle, this.isWhite);
+        this.shells.push(shell);
     }
+
+    drawShells() {
+    
+        for (let i = this.shells.length - 1; i >= 0; i--) {
+          this.shells[i].update();
+          this.shells[i].draw(); 
+          
+          if (this.shells[i].shellSpawned > 180 ||
+              this.shells[i].x > 540) {
+              this.shells.splice(i, 1);
+          }
+
+
+        }
+      }
+
 
 }
