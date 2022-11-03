@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="css/style.css"/>
-  
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
     
     <title>Tank Battle</title>
@@ -13,10 +13,15 @@
   <body>
     <h1>Tank Battle</h1>
     
-    <div>
-        <h2>Player 1 Health: <span>0</span></h2>
-        <h2>Player 2 Health: <span>0</span></h2>
-    </div>    
+    <div class="text">
+        <h3>Red Tank Score: <span id="blueScore">0</span></h3>
+        <h3>Blue Tank Score: <span id="redScore">0</span></h3>
+    </div>
+    <div class="text">
+      <p>For Red press <span>&#8592</span> and <span>&#8594</span> to move, numpad 0 to shoot</p>
+      <p>For Blue press A and D to move, space to shoot</p>
+      <p>3 shots wins you the game</p>
+    </div>
     <script src="src/shells.js"></script>
     <script src="src/tank.js"></script>
     <script src="src/constants.js"></script>
