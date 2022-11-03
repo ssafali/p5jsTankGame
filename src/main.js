@@ -6,6 +6,10 @@ let blueTankImage;
 let redTankImage;
 let backgroundImage;
 
+
+let blueTankP1Score = document.querySelector('#blueScore');
+let redTankP2Score = document.querySelector("#redScore");
+
 function preload() {
   blueTankImage = loadImage('assets/tankBlue.png');
   redTankImage = loadImage('assets/tankRed.png');
@@ -16,15 +20,21 @@ function setup() {
   createCanvas(540, 540);
   blueTankP1 = new Tank(blueTankImage);
   redTankP2 = new Tank(redTankImage);
-  
+
 }
 
 function draw() {
   background(backgroundImage);
+
+  blueTankP1.update(redTankP2);
+  redTankP2.update(blueTankP1);
+
   blueTankP1.draw();
   redTankP2.draw();
-  blueTankP1.update();
-  redTankP2.update();
+  
+  blueTankP1Score.innerText = blueTankP1.score;
+  redTankP2Score.innerText = redTankP2.score;
+
 }
 
 function keyPressed() {
@@ -35,14 +45,19 @@ function keyPressed() {
   } else if (keyCode == 68) {
     // d
     blueTankP1.rotateAmount = ROTATE_AMOUNT;
-  } else if (keyCode == 65) { 
-  	// a
+  } else if (keyCode == 65) {
+    // a
     blueTankP1.rotateAmount = -ROTATE_AMOUNT;
   }
 
-  if(keyCode == 16) {
+  if (keyCode == 96) {
+    //numpad 0
     redTankP2.shoot();
+  } else if (keyCode == 32) {
+    blueTankP1.shoot();
   }
+
+
 }
 
 function keyReleased() {
@@ -52,6 +67,4 @@ function keyReleased() {
     blueTankP1.rotateAmount = 0;
   }
 }
-
-
 

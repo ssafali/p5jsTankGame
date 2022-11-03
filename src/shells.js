@@ -35,17 +35,14 @@ class Shell {
         if(this.isWhite) {
             push();
             noStroke();
-            fill(255);
+            fill(120);
             ellipse(this.x, this.y, this.r*2, this.r*2);	
             pop();
         } else {
             push();
-            fill(0);
+            fill(4);
             ellipse(this.x, this.y, 5, 5);	
             pop();
         }
     }
-
-
-
 }
