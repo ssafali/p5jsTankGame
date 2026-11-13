@@ -1,98 +1,97 @@
-
 class Tank {
-    constructor(image, isWhite) {
-        this.height = 540;
-        this.width = 540;
+  constructor(name, image, x, y, angle, shellColor) {
+    this.name = name;
+    this.image = image;
+    this.spawn = { x, y, angle };
+    this.shellColor = shellColor;
+    this.reset();
+  }
 
-        this.image = image;
-        this.x = random(540);
-        this.y = random(540);
+  reset() {
+    this.x = this.spawn.x;
+    this.y = this.spawn.y;
+    this.angle = this.spawn.angle;
+    this.speed = CRUISE_SPEED;
+    this.velocity = p5.Vector.fromAngle(this.angle, this.speed);
+    this.shells = [];
+    this.score = 0;
+    this.cooldown = 0;
+    this.flash = 0;
+  }
 
-        this.angle = 0;
-        this.speed = 0.9;
+  update(dt, turn, throttle) {
+    this.angle += turn * ROTATE_SPEED * dt;
 
-        this.rotateAmount = 0;
+    const targetSpeed = throttle > 0 ? BOOST_SPEED : throttle < 0 ? BRAKE_SPEED : CRUISE_SPEED;
+    this.speed = approach(this.speed, targetSpeed, ACCELERATION * dt);
 
-        this.shells = [];
-        this.isWhite = isWhite;
+    const desired = p5.Vector.fromAngle(this.angle, this.speed);
+    this.velocity.lerp(desired, Math.min(1, GRIP * dt));
 
-        // this.blueTankP1Score = document.querySelector('#blueScore');
-        // this.redTankP2Score = document.querySelector("#redScore");
-        this.score = 0;
+    this.x += this.velocity.x * dt;
+    this.y += this.velocity.y * dt;
+    wrapAround(this, TANK_RADIUS);
+
+    this.cooldown = Math.max(0, this.cooldown - dt);
+    this.flash = Math.max(0, this.flash - dt);
+
+    for (let i = this.shells.length - 1; i >= 0; i--) {
+      this.shells[i].update(dt);
+      if (this.shells[i].isExpired()) {
+        this.shells.splice(i, 1);
+      }
     }
+  }
 
-    update(enemyPlayer) {
-        this.goForward();
-        this.stayWithin();
-
-        this.angle += this.rotateAmount;
-
-        //checking if player has been hit
-        this.gettingShot(enemyPlayer)
+  checkHits(enemy) {
+    const hits = [];
+    for (let i = this.shells.length - 1; i >= 0; i--) {
+      const shell = this.shells[i];
+      if (dist(enemy.x, enemy.y, shell.x, shell.y) < TANK_RADIUS + SHELL_RADIUS) {
+        this.shells.splice(i, 1);
+        this.score++;
+        enemy.takeHit(shell);
+        hits.push(shell);
+      }
     }
+    return hits;
+  }
 
-    gettingShot(enemyPlayer) {
-        let enemyShells = enemyPlayer.shells;
-        for (let i = enemyShells.length - 1; i >= 0; i--) {
-            if (dist(this.x, this.y, enemyShells[i].x, enemyShells[i].y) < (15 + enemyShells[i].r)) {
-                enemyShells.splice(i, 1);
-                console.log("Got hit.")
-                this.score++;
-            }
-        }
+  takeHit(shell) {
+    this.flash = HIT_FLASH_TIME;
+    this.velocity.add(createVector(shell.vx, shell.vy).setMag(HIT_KNOCKBACK));
+  }
+
+  shoot() {
+    if (this.cooldown > 0 || this.shells.length >= MAX_SHELLS) return null;
+
+    const muzzle = this.muzzlePosition();
+    const shot = p5.Vector.fromAngle(this.angle, SHELL_SPEED).add(this.velocity);
+    this.shells.push(new Shell(muzzle.x, muzzle.y, shot.x, shot.y, this.shellColor));
+
+    this.velocity.sub(p5.Vector.fromAngle(this.angle, RECOIL));
+    this.cooldown = SHOT_COOLDOWN;
+    return muzzle;
+  }
+
+  muzzlePosition() {
+    const offset = TANK_WIDTH / 2;
+    return { x: this.x + cos(this.angle) * offset, y: this.y + sin(this.angle) * offset };
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y);
+    rotate(this.angle + PI);
+    imageMode(CENTER);
+    if (this.flash > 0 && Math.floor(this.flash * 16) % 2 === 0) {
+      tint(255, 90);
     }
+    image(this.image, 0, 0, TANK_WIDTH, TANK_HEIGHT);
+    pop();
 
-    goForward() {
-        this.x += this.speed * sin(this.angle);
-        this.y += this.speed * cos(this.angle);
-
+    for (const shell of this.shells) {
+      shell.draw();
     }
-
-    stayWithin() {
-        if (this.x < -1) {
-            this.x = this.width;
-        } else if (this.x > this.width) {
-            this.x = 0;
-        }
-        if (this.y > this.height - 30) {
-            this.y = 0;
-        } else if (this.y < -this.image.height) {
-            this.y = this.height - 30;
-        }
-    }
-
-    draw() {
-
-        push();
-        translate(this.x, this.y);
-        imageMode(CENTER);
-        rotate(this.angle + PI);
-        image(this.image, 0, 0, 50, 40)
-        pop();
-
-        this.drawShells();
-        if(this.score == 3) {
-            noLoop();
-        }
-    }
-
-    shoot() {
-        let shell = new Shell(this.x, this.y, this.angle, this.isWhite);
-        if (this.shells.length < 4) {
-            this.shells.push(shell);
-        }
-    }
-    drawShells() {
-        for (let i = this.shells.length - 1; i >= 0; i--) {
-            this.shells[i].update();
-            this.shells[i].draw();
-
-            if (this.shells[i].shellSpawned > 180 ||
-                this.shells[i].x > 520 ||
-                this.shells[i].y > 520) {
-                this.shells.splice(i, 1);
-
-            }
-        }
-    }
+  }
 }

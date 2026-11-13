@@ -3,28 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="css/style.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
-    
     <title>Tank Battle</title>
   </head>
   <body>
     <h1>Tank Battle</h1>
-    
+
     <div class="text">
-        <h3>Red Tank Score: <span id="blueScore">0</span></h3>
-        <h3>Blue Tank Score: <span id="redScore">0</span></h3>
+      <p><span class="blue">Blue</span>: A / D steer, W / S speed, Space shoots</p>
+      <p><span class="red">Red</span>: Left / Right steer, Up / Down speed, Enter shoots</p>
+      <p>First to 3 hits wins. R restarts, M mutes.</p>
     </div>
-    <div class="text">
-      <p>For Red press <span>&#8592</span> and <span>&#8594</span> to move, numpad 0 to shoot</p>
-      <p>For Blue press A and D to move, space to shoot</p>
-      <p>3 shots wins you the game</p>
-    </div>
+    <script src="src/constants.js"></script>
+    <script src="src/audio.js"></script>
+    <script src="src/effects.js"></script>
     <script src="src/shells.js"></script>
     <script src="src/tank.js"></script>
-    <script src="src/constants.js"></script>
     <script src="src/main.js"></script>
   </body>
 </html>

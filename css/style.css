@@ -1,21 +1,29 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    font-family: sans-serif;
-    background-color: #000000;
-    font-family: 'Press Start 2P', cursive;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #000000;
+  font-family: 'Press Start 2P', monospace;
+}
 
-  h1, h3, p{
-    color:ivory;
-  }
+h1, p {
+  color: ivory;
+}
 
-  p span {
-    font-size: 30px;
-  }
+p {
+  font-size: 12px;
+  line-height: 1.6;
+}
 
-  .text {
-    text-align: center;
-  }
+.text {
+  text-align: center;
+}
+
+.blue {
+  color: rgb(60, 140, 255);
+}
+
+.red {
+  color: rgb(255, 70, 60);
+}
